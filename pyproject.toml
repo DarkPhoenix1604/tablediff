@@ -1,0 +1,32 @@
+[project]
+name = "tablediff"
+version = "0.1.0"
+description = "Find the rows that differ between two tables, within or across databases, without copying either table."
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Aaditya Pahariya" }]
+requires-python = ">=3.11"
+dependencies = [
+    "duckdb>=1.1",
+    "psycopg[binary]>=3.2",
+]
+
+[project.scripts]
+tablediff = "tablediff.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

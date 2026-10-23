@@ -1,0 +1,28 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: tablediff
+          POSTGRES_DB: tablediff
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      TABLEDIFF_PG_URL: postgresql://postgres:tablediff@localhost:5432/tablediff
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --python 3.13
+      - run: uv run ruff check .
+      - run: uv run pytest -v
+      - name: Benchmark smoke run (cross-database)
+        run: uv run python bench/bench.py --rows 100000 --changes 30 --pg "$TABLEDIFF_PG_URL"
